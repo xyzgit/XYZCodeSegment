@@ -1,0 +1,116 @@
+
+<script src="../.libs/vue.min.js"></script>
+
+<head>
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+</head>
+
+<div id="package" >
+  <div style="text-align: center">
+    {{ title }}
+  </div>
+
+  <div v-if="iOS.length > 0" :style="subTitleStyle">
+    iOS
+  </div>
+  <div v-for="(ipa, index) in iOS" :style="itemStyle">
+    <a v-bind:href=" 'itms-services://?action=download-manifest&url=' + urlPrefix + title + '/' + dirName + ipa.url">{{ ipa.name }}</a>
+    <div v-if="index == 0" :style="smallTips" >
+      {{ littleTips }}
+    </div>
+  </div>
+
+  <div v-if="Android.length > 0" :style="subTitleStyle">
+    Android
+  </div>
+  <div v-for="(apk, index) in Android" :style="itemStyle">
+    <a v-bind:href="urlPrefix + title + '/' + dirName + apk.url">{{ apk.name }}</a>
+    <div v-if="index == 0" :style="smallTips" >
+      {{ littleTips }}
+    </div>
+  </div>
+
+  <div :style="tipsStyle">
+    1. iOS 安装包，请用iPhone Safari浏览器打开此页面进行下载安装。如果点击后，始终没有弹出来“安装”对话框，请卸载掉已有的拉卡拉App，若还不行，请重启手机
+  </div>
+  <div :style="tipsStyle">
+    2. iOS9遇“未受信任的企业级开发者”，通过以下设置才可正常打开：设置 > 通用 > 描述文件 > 企业级用户“Kaolazhengxin Service co. LTD.” > 信任
+  </div>
+  <div :style="[tipsStyle, normalColor]">
+    3. 应用打包日期，请查看“我的” > “更多设置” > “关于我们” > “Build(1509261754M54S1)”这括号里的前10位分别代表年月日时分,后面为Bundle的主版本与子版本号
+  </div>
+</div>
+
+<script>
+  var package = new Vue({
+    el: '#package',
+    data: {
+			//配置页面标题
+      title: "1.3.7",
+
+      dirName: "packages",
+      urlPrefix: "https://mdownload.lakala.com/apps/lakala/",
+      littleTips: "仅限在北京公司内网中使用",
+      iOS: [
+        {
+          name: '内网测试',
+          url:'/ce_shi.plist'
+        },
+        {
+          name: '外网测试',
+          url:'/ce_shi_wai_wang.plist'
+        },
+        {
+          name: '生产备机',
+          url:'/beiji.plist'
+        },
+        {
+          name: '生产',
+          url:'/shengchan.plist'
+        }
+      ],
+      Android: [
+        {
+          name: '内网测试',
+          url:'/LakalaClient-debug-%e6%b5%8b%e8%af%95%e5%86%85%e7%bd%91.apk'
+        },
+        {
+          name: '外网测试',
+          url:'/LakalaClient-debug-%e6%b5%8b%e8%af%95%e5%a4%96%e7%bd%91.apk'
+        },
+        {
+          name: '生产备机',
+          url:'/LakalaClient-debug-%e7%94%9f%e4%ba%a7%e5%a4%87%e6%9c%ba.apk'
+        },
+        {
+          name: '生产',
+          url:'/LakalaClient-debug-%e7%94%9f%e4%ba%a7.apk'
+        }
+      ],
+      tipsStyle: {
+        fontSize: 12,
+        color: 'red',
+        marginTop: '10px'
+      },
+      smallTips: {
+        fontSize: 8,
+        marginLeft: '10px',
+        color: 'gray'
+      },
+      normalColor: {
+        color: 'black'
+      },
+      itemStyle: {
+        margin: '10px 0px 0px 10px',
+        fontSize: 14
+      },
+      subTitleStyle: {
+        marginTop: '10px',
+        fontSize: 16
+      }
+    },
+    created: function () {
+      document.title = this.title;
+    }
+  })
+</script>
