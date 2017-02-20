@@ -14,7 +14,7 @@
     iOS
   </div>
   <div v-for="(ipa, index) in iOS" :style="itemStyle">
-    <a v-bind:href=" 'itms-services://?action=download-manifest&url=' + urlPrefix + title + '/' + dirName + ipa.url">{{ ipa.name }}</a>
+    <a v-bind:href=" 'itms-services://?action=download-manifest&url=' + url + ipa.url">{{ ipa.name }}</a>
     <div v-if="index == 0" :style="smallTips" >
       {{ littleTips }}
     </div>
@@ -24,7 +24,7 @@
     Android
   </div>
   <div v-for="(apk, index) in Android" :style="itemStyle">
-    <a v-bind:href="urlPrefix + title + '/' + dirName + apk.url">{{ apk.name }}</a>
+    <a v-bind:href="url + apk.url">{{ apk.name }}</a>
     <div v-if="index == 0" :style="smallTips" >
       {{ littleTips }}
     </div>
@@ -46,10 +46,9 @@
     el: '#package',
     data: {
 			//配置页面标题
-      title: "1.3.7",
+      title: "1.2.71",
+      dirName: "0117_xindai_duanxin_shoujihao",
 
-      dirName: "packages",
-      urlPrefix: "https://mdownload.lakala.com/apps/lakala/",
       littleTips: "仅限在北京公司内网中使用",
       iOS: [
         {
@@ -111,6 +110,15 @@
     },
     created: function () {
       document.title = this.title;
+    },
+    computed: {
+      url: function() {
+        if (this.dirName == 'packages') {
+          return 'https://mdownload.lakala.com/apps/lakala/' + this.title + '/packages'
+        }else {
+          return 'https://mdownload.lakala.com/apps/lakala/feature_test_package/resources/' + this.dirName
+        }
+      }
     }
   })
 </script>

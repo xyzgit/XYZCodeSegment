@@ -27,11 +27,29 @@ for line in fileinput.input(html_file):
         str_array = line.split('"')
         dir_name = str_array[1]
 
-pattern = r"lakala/[^/]+/[^/]+/"
-repl = "lakala/" + title + '/' + dir_name + "/"
+pattern = r"lakala/[^<]+<"
+
+#Android替换内容
+replformat = "lakala/feature_test_package/resources/{0}/{1}<"
+
+first_arg = dir_name
+
+#iOS替换内容
+if 'packages' == dir_name:
+    replformat = "lakala/{0}/packages/{1}<"
+    first_arg = title
+
+ipa_array = [
+    '%e6%8b%89%e5%8d%a1%e6%8b%89_%e6%b5%8b%e8%af%95.ipa',
+    '%e6%8b%89%e5%8d%a1%e6%8b%89_%e6%b5%8b%e8%af%95%e5%a4%96%e7%bd%91.ipa',
+    '%e6%8b%89%e5%8d%a1%e6%8b%89_%e5%a4%87%e6%9c%ba.ipa',
+    '%e6%8b%89%e5%8d%a1%e6%8b%89_%e7%94%9f%e4%ba%a7.ipa'
+]
 
 files = ['ce_shi.plist', 'ce_shi_wai_wang.plist', 'beiji.plist', 'shengchan.plist']
-for file in files:
-    modify_file(file, pattern,repl)
+for index, filename in enumerate(files):
+    ipa = ipa_array[index]
+    repl = replformat.format(first_arg, ipa)
+    modify_file(filename, pattern,repl)
 
 print('modify complete')
