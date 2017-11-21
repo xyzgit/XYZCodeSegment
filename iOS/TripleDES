@@ -1,0 +1,62 @@
+/**
+ * 3DES 加解密
+ * @param code 需要加密/解密的字符串
+ * @param key 加/解密的秘钥
+ * @param type 0 解密；1 加密
+ */
++ (NSString *)tripleDES: (NSString *)code withKey: (NSString *)key andType: (NSInteger)type {
+    //把string 转NSData
+    
+    NSData *data = nil;
+    if (type == 0) {
+        data = [[NSData alloc] initWithBase64EncodedString:code options: NSDataBase64DecodingIgnoreUnknownCharacters];
+    }else if (type == 1) {
+        data = [code dataUsingEncoding:NSUTF8StringEncoding];
+    }else {
+        return nil;
+    }
+    
+    //length
+    size_t dataInLength = [data length];
+    const void *dataIn = (const void *)[data bytes];
+    
+    CCCryptorStatus ccStatus;
+    uint8_t *dataOut = NULL;
+    size_t dataOutAvailable = 0;
+    size_t dataOutMoved = 0;
+    
+    dataOutAvailable = (dataInLength + kCCBlockSize3DES) & ~(kCCBlockSize3DES - 1);
+    dataOut = static_cast<uint8_t *>(malloc(dataOutAvailable * sizeof(uint8_t)));
+    memset((void *)dataOut, 0x0, dataOutAvailable);
+    
+    NSLog(@"xyz-> 3DES key: %@", key);
+    const void *desKey = (const void *)[key UTF8String];
+    
+    //配置CCCrypt
+    CCOperation op = type == 0 ? kCCDecrypt : kCCEncrypt;
+    ccStatus = CCCrypt(op,
+                       kCCAlgorithm3DES, //3DES
+                       kCCOptionECBMode|kCCOptionPKCS7Padding, //设置模式
+                       desKey,
+                       kCCKeySize3DES,
+                       nil,     //偏移量，这里不用，设置为nil;不用的话，必须为nil,不可以为@“”
+                       dataIn,
+                       dataInLength,
+                       (void *)dataOut,
+                       dataOutAvailable,
+                       &dataOutMoved);
+    NSString *result = @"";
+    if (ccStatus == kCCSuccess) {
+        if (type == 0) {
+            NSData *decryptedData = [NSData dataWithBytes:(const void *)dataOut length:(NSUInteger)dataOutMoved];
+            result = [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding];
+            NSLog(@"xyz-> 3DES decrypted: %@", result);
+        }else {
+            NSData *encryptedData = [NSData dataWithBytes:(const void *)dataOut length:(NSUInteger)dataOutMoved];
+            result = [encryptedData base64EncodedStringWithOptions: NSDataBase64Encoding64CharacterLineLength];
+            NSLog(@"xyz-> 3DES encrypted: %@", result);
+        }
+    }
+   
+    return result;
+}
